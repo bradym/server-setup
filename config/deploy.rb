@@ -55,7 +55,6 @@ task :lamp do
 
   apache_configure
   mysql_secure
-  mysql_backup
   php_configure
 
 end
@@ -72,6 +71,10 @@ end
 
 desc "Improve MySQL security"
 task :mysql_secure do
+  if exists?(:mysql_password) == false
+    set :mysql_password, Capistrano::CLI.password_prompt('MySQL Root Password: ')
+  end
+
   run "mysql -B -u root -p -e \"
     DELETE FROM mysql.user WHERE USER='';
     DELETE FROM mysql.user WHERE USER='root' AND HOST NOT IN ('localhost', '127.0.0.1', '::1');
