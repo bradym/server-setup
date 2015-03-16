@@ -10,9 +10,10 @@ task :setup do
   updates
   essential
   time
-  lamp
+  #lamp
   mail_config
   cleanup
+  user
   reboot
 end
 
@@ -61,7 +62,7 @@ end
 
 desc "Install essential tools"
 task :essential do
-  sudo "#{apt} install build-essential finger libreadline-dev ncurses-dev git-core mercurial"
+  sudo "#{apt} install build-essential finger libreadline-dev ncurses-dev git-core mercurial vim ctags python-pip"
 end
 
 desc "Reboot system"
@@ -87,9 +88,9 @@ end
 
 desc "Configure Apache"
 task :apache_configure do
-  sudo "sed -i 's/ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf.d/security"
-  sudo "sed -i 's/ServerSignature On/#ServerSignature On/' /etc/apache2/conf.d/security"
-  sudo "sed -i 's/#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf.d/security"
+  sudo "sed -i 's/ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf"
+  sudo "sed -i 's/ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf"
+  sudo "sed -i 's/#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf"
   sudo "a2dismod autoindex status negotiation"
   sudo "a2enmod rewrite ssl"
   sudo "a2dissite default"
@@ -111,4 +112,10 @@ task :mail_config do
   sudo "sed -i 's/<HOSTNAME>/$CAPISTRANO:HOST$/' /etc/exim4/update-exim4.conf.conf"
   sudo "chown root:root /etc/exim4/update-exim4.conf.conf"
   sudo "update-exim4.conf"
+end
+
+desc "Setup user"
+task :user do
+    sudo "useradd -c \"Brady Mitchell\" -G sudo -m -s /bin/bash -p saYjwpC0eGcVo bradym"
+    sudo "passwd -e bradym"
 end
